@@ -1,0 +1,68 @@
+plugins {
+	id 'org.springframework.boot' version '2.3.1.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'java'
+	id "org.sonarqube" version "2.7.1"
+	id "jacoco"
+}
+
+// For applying checkstyle configuration
+apply plugin: 'checkstyle'
+
+group = 'com.logicalsapien'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	runtimeOnly 'com.h2database:h2'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+}
+
+test {
+	useJUnitPlatform()
+}
+
+jacocoTestReport {
+	reports {
+		xml.enabled true
+		html.enabled true
+		csv.enabled false
+	}
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, excludes: ['**/com/logicalsapien/joan/JoAnApplication**'])
+		}))
+	}
+}
+
+//For configuring checkstyle
+checkstyle {
+	toolVersion '8.26'
+	configFile file("config/checkstyle/checkstyle.xml")
+}
+
+//For configuring sonarqube
+sonarqube {
+	properties {
+		property "sonar.projectKey", "LogicalSapien_JoAn"
+		property "sonar.coverage.jacoco.xmlRe	portPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+		property "sonar.coverage.exclusions", "src/main/java/com/logicalsapien/joan/JoAnApplication.java"
+		property "sonar.exclusions", "src/java/test/**"
+	}
+}

@@ -1,0 +1,13 @@
+# For Travis CI Configuration
+language: java
+addons:
+  sonarcloud:
+    organization: logicalsapien
+    token:
+      secure: XZqZBrOdhAwRsNsGUViTv+pDaegtLck5qI4A3jlz+QQChtw7vAe1xYcnBySCjjBy27HBKdu/Y1YGnRkzFSJvvHHgmbWnLNSPrphG+6Mdt5h8C2YIPCNwO/3XYnjwMafc2/1xT1z15aItC3bP4Uqj4jXYck1aSYJhDIMlLRstFZKYwrpQ4cAcSnxJO34erhKfbTtmyoFKrITlbud3AS/6ydc7auwdBD8io+/NcG2jhUc0ChmykPa/cqmVQbNjLawFDpyrrvRyvhWjUqlXmNncOBVXn9pf4eIMZChQhlXcCutBbOERS/nDPZVwRErnUarw4KL/DDdR0k6yeq5cotzRS0gH1RwV/FTMKoSyrtlr3i0uhFqfqMMXGwDlTwlCb6UNajE+Wzn2phE/Xo1wNBl34j398KLHvhdTDioOhA3u7I9LLwNkBjaTg1olSe/DmQhfLykGGCk2tAv4DVgKW4WB6q1j54+tjvuYP04WgTvcrKptELaBQLwEYGmW2RHmxH7jkCveNRe/956etj8EorJ0mLmBfQijLT7YuIBSf3LJKB4jeehccd7UwVfFPbmJ1eE/+BUUkawiQK5jbKRsJkFJ20XPJyiP4Mwc+b6JOabjrnGHo7/0P3RXTDN2pHC+r5W6aiuTv+t7hD9ynDqLwk8tTA34/FnFKTuthjMyLA80YDA=
+before_install:
+- chmod +x gradlew
+script:
+- "./gradlew checkstyleMain checkstyleTest"
+- "./gradlew clean build jacocoTestReport"
+- "./gradlew sonarqube"
