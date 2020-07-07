@@ -9,12 +9,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class JoAnApplication {
 
-	/**
-	 * JoAnApplication main method.
-	 * @param args args
-	 */
-	public static void main(final String[] args) {
-		SpringApplication.run(JoAnApplication.class, args);
-	}
+  /**
+   * JoAnApplication main method.
+   * @param args args
+   */
+  public static void main(final String[] args) {
+    SpringApplication.run(JoAnApplication.class, args);
+  }
 
 }
