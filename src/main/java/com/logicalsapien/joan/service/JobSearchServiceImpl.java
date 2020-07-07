@@ -44,24 +44,26 @@ public class JobSearchServiceImpl implements JobSearchService {
       final String jobName, final String country) {
     long totalCount = 0;
     double sum = 0;
-    // query adzuna api
-    int startingPage = 1;
-    int resultsPerPage = 1000;
-    ResponseEntity<Object> apiResponse = restTemplate
-        .exchange(url + "/" + api + "/jobs/" + country + "/search/" + startingPage + "?"
-                + "app_id=" + appId + "&app_key=" + appKey
-                + "&results_per_page=" + resultsPerPage + "&title_only=" + jobName,
-            HttpMethod.GET, null, new ParameterizedTypeReference<Object>() {}
-        );
-    if ( Objects.nonNull(apiResponse.getBody())) {
-      LinkedHashMap<String, Object> responseBody = (LinkedHashMap) apiResponse.getBody();
-      List<LinkedHashMap<String, Object>> results
-          = (List<LinkedHashMap<String, Object>>) responseBody.get("results");
+    if (Objects.nonNull(jobName) && Objects.nonNull(country)) {
+      // query adzuna api
+      int startingPage = 1;
+      int resultsPerPage = 1000;
+      ResponseEntity<Object> apiResponse = restTemplate
+          .exchange(url + "/" + api + "/jobs/" + country + "/search/" + startingPage + "?"
+                  + "app_id=" + appId + "&app_key=" + appKey
+                  + "&results_per_page=" + resultsPerPage + "&title_only=" + jobName,
+              HttpMethod.GET, null, new ParameterizedTypeReference<Object>() {}
+          );
+      if ( Objects.nonNull(apiResponse.getBody())) {
+        LinkedHashMap<String, Object> responseBody = (LinkedHashMap) apiResponse.getBody();
+        List<LinkedHashMap<String, Object>> results
+            = (List<LinkedHashMap<String, Object>>) responseBody.get("results");
 
-      // iterate through results
-      for (LinkedHashMap<String, Object> result : results) {
-        sum = sum + Double.parseDouble(result.get("salary_min").toString());
-        totalCount++;
+        // iterate through results
+        for (LinkedHashMap<String, Object> result : results) {
+          sum = sum + Double.parseDouble(result.get("salary_min").toString());
+          totalCount++;
+        }
       }
     }
     JobSearchResponseDto responseDto = new JobSearchResponseDto();
