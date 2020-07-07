@@ -44,21 +44,18 @@ public class JobSearchServiceImpl implements JobSearchService {
       final String jobName, final String country) {
     long totalCount = 0;
     double sum = 0;
-    if (Objects.nonNull(jobName) && Objects.nonNull(country)) {
-      // query adzuna api
-      int startingPage = 1;
-      int resultsPerPage = 1000;
+    // query adzuna api
+    int startingPage = 1;
+    int resultsPerPage = 1000;
+    String urlToCall = getApiUrl(country, startingPage, resultsPerPage, jobName);
+    if (Objects.nonNull(urlToCall)) {
       ResponseEntity<Object> apiResponse = restTemplate
-          .exchange(url + "/" + api + "/jobs/" + country + "/search/" + startingPage + "?"
-                  + "app_id=" + appId + "&app_key=" + appKey
-                  + "&results_per_page=" + resultsPerPage + "&title_only=" + jobName,
-              HttpMethod.GET, null, new ParameterizedTypeReference<Object>() {}
-          );
-      if ( Objects.nonNull(apiResponse.getBody())) {
+          .exchange(urlToCall, HttpMethod.GET, null,
+              new ParameterizedTypeReference<Object>() {});
+      if (Objects.nonNull(apiResponse.getBody())) {
         LinkedHashMap<String, Object> responseBody = (LinkedHashMap) apiResponse.getBody();
         List<LinkedHashMap<String, Object>> results
             = (List<LinkedHashMap<String, Object>>) responseBody.get("results");
-
         // iterate through results
         for (LinkedHashMap<String, Object> result : results) {
           sum = sum + Double.parseDouble(result.get("salary_min").toString());
@@ -72,5 +69,22 @@ public class JobSearchServiceImpl implements JobSearchService {
       responseDto.setAverageSalary(sum / totalCount);
     }
     return responseDto;
+  }
+
+  private String getApiUrl(final String country, final int startingPage,
+                           final int resultsPerPage, final String jobName) {
+    if (Objects.nonNull(country) && Objects.nonNull(jobName)) {
+      StringBuilder urlToCall = new StringBuilder(url + "/" + api + "/jobs/");
+      urlToCall.append(country.trim());
+      urlToCall.append("/search/");
+      urlToCall.append(startingPage);
+      urlToCall.append("?app_id=" + appId);
+      urlToCall.append("&app_key=" + appKey);
+      urlToCall.append("&results_per_page=" + resultsPerPage);
+      urlToCall.append("&title_only=" + jobName.trim());
+      return urlToCall.toString();
+    } else {
+      return null;
+    }
   }
 }
