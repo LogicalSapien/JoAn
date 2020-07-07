@@ -56,7 +56,7 @@ public class JobSearchServiceImpl implements JobSearchService {
 
       // iterate through results
       for (LinkedHashMap result : results) {
-        sum = sum + (Integer) result.get("salary_min");
+        sum = sum + Double.parseDouble(result.get("salary_min").toString());
         totalCount++;
       }
     }
