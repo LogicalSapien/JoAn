@@ -43,30 +43,48 @@ public class JobSearchServiceImpl implements JobSearchService {
   public JobSearchResponseDto calculateAverageJobSalary(
       final String jobName, final String country) {
     long totalCount = 0;
+    long countForAverage = 0;
     double sum = 0;
     // query adzuna api
     int startingPage = 1;
-    int resultsPerPage = 1000;
+    int resultsPerPage = 50;
     String urlToCall = getApiUrl(country, startingPage, resultsPerPage, jobName);
     if (Objects.nonNull(urlToCall)) {
-      ResponseEntity<Object> apiResponse = restTemplate
-          .exchange(urlToCall, HttpMethod.GET, null,
-              new ParameterizedTypeReference<Object>() {});
-      if (Objects.nonNull(apiResponse.getBody())) {
-        LinkedHashMap<String, Object> responseBody = (LinkedHashMap) apiResponse.getBody();
-        List<LinkedHashMap<String, Object>> results
-            = (List<LinkedHashMap<String, Object>>) responseBody.get("results");
-        // iterate through results
-        for (LinkedHashMap<String, Object> result : results) {
-          sum = sum + Double.parseDouble(result.get("salary_min").toString());
-          totalCount++;
+      // call the api as long all the results are fetched
+      while(true) {
+        ResponseEntity<Object> apiResponse = restTemplate
+                .exchange(urlToCall, HttpMethod.GET, null,
+                        new ParameterizedTypeReference<Object>() {});
+        if (Objects.nonNull(apiResponse.getBody())) {
+          LinkedHashMap<String, Object> responseBody = (LinkedHashMap) apiResponse.getBody();
+          totalCount = Long.parseLong(responseBody.get("count").toString());
+          List<LinkedHashMap<String, Object>> results
+                  = (List<LinkedHashMap<String, Object>>) responseBody.get("results");
+          // iterate through results
+          for (LinkedHashMap<String, Object> result : results) {
+            double salaryMin = Double.parseDouble(result.get("salary_min").toString());
+            if (salaryMin > 0 ) {
+              sum = sum + salaryMin;
+              countForAverage++;
+            }
+          }
+        } else {
+          // break out of loop
+          break;
         }
+        if ((startingPage * resultsPerPage) < totalCount) {
+          // continue loop and get next page
+          startingPage++;
+        } else {
+          break;
+        }
+
       }
     }
     JobSearchResponseDto responseDto = new JobSearchResponseDto();
     responseDto.setNoOfJobs(totalCount);
-    if (totalCount != 0) {
-      responseDto.setAverageSalary(sum / totalCount);
+    if (countForAverage != 0) {
+      responseDto.setAverageSalary(sum / countForAverage);
     }
     return responseDto;
   }

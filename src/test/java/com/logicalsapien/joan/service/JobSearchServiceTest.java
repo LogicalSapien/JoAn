@@ -56,6 +56,7 @@ class JobSearchServiceTest {
     results.add(r2);
     Map<String, Object> responseBody = new LinkedHashMap<>();
     responseBody.put("results", results);
+    responseBody.put("count", 2);
     HttpHeaders header = new HttpHeaders();
     header.setContentType(MediaType.APPLICATION_JSON);
     ResponseEntity apiResponse = new ResponseEntity<>(
