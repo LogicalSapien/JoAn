@@ -1,7 +1,6 @@
 package com.logicalsapien.joan.service;
 
 import com.logicalsapien.joan.model.JobSearchResponseDto;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -48,21 +47,22 @@ public class JobSearchServiceImpl implements JobSearchService {
                 + "&results_per_page=" + resultsPerPage + "&title_only=" + jobName,
             HttpMethod.GET, null, new ParameterizedTypeReference<Object>() {}
         );
-    if (Objects.nonNull(apiResponse)
-        && Objects.nonNull(apiResponse.getBody())) {
-      Map<String, Object> responseBody = (LinkedHashMap) apiResponse.getBody();
-      List<LinkedHashMap> results
-          = (List<LinkedHashMap>) responseBody.get("results");
+    if ( Objects.nonNull(apiResponse.getBody())) {
+      Map<String, Object> responseBody = (Map) apiResponse.getBody();
+      List<Map> results
+          = (List<Map>) responseBody.get("results");
 
       // iterate through results
-      for (LinkedHashMap result : results) {
+      for (Map result : results) {
         sum = sum + Double.parseDouble(result.get("salary_min").toString());
         totalCount++;
       }
     }
     JobSearchResponseDto responseDto = new JobSearchResponseDto();
     responseDto.setNoOfJobs(totalCount);
-    responseDto.setAverageSalary(sum / totalCount);
+    if (totalCount != 0) {
+      responseDto.setAverageSalary(sum / totalCount);
+    }
     return responseDto;
   }
 }
