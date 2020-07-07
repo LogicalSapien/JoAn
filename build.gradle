@@ -32,6 +32,15 @@ dependencies {
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+	// https://mvnrepository.com/artifact/org.owasp.esapi/esapi
+	compile group: 'org.owasp.esapi', name: 'esapi', version: '2.2.0.0'
+
+	// https://mvnrepository.com/artifact/org.jsoup/jsoup
+	compile group: 'org.jsoup', name: 'jsoup', version: '1.13.1'
+
+	// https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
+
 }
 
 test {

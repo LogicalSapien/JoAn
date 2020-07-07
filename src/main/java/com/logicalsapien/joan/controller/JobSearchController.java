@@ -2,6 +2,7 @@ package com.logicalsapien.joan.controller;
 
 import com.logicalsapien.joan.model.JobSearchResponseDto;
 import com.logicalsapien.joan.service.JobSearchService;
+import com.logicalsapien.joan.utils.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,8 @@ public class JobSearchController {
       @RequestParam("jobName") final String jobName,
       @RequestParam("country") final String country) {
     JobSearchResponseDto searchResult
-        = jobSearchService.calculateAverageJobSalary(jobName, country);
+        = jobSearchService.calculateAverageJobSalary(
+                CommonUtils.stringXss(jobName), CommonUtils.stringXss(country));
     return new ResponseEntity<>(searchResult, HttpStatus.OK);
   }
 
