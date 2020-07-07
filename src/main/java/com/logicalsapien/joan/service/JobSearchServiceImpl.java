@@ -1,8 +1,8 @@
 package com.logicalsapien.joan.service;
 
 import com.logicalsapien.joan.model.JobSearchResponseDto;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +20,12 @@ public class JobSearchServiceImpl implements JobSearchService {
 
   @Autowired
   RestTemplate restTemplate;
+
+  @Value("${adzuna.url}")
+  private String url;
+
+  @Value("${adzuna.api}")
+  private String api;
 
   @Value("${adzuna.appId}")
   private String appId;
@@ -42,18 +48,18 @@ public class JobSearchServiceImpl implements JobSearchService {
     int startingPage = 1;
     int resultsPerPage = 1000;
     ResponseEntity<Object> apiResponse = restTemplate
-        .exchange("https://api.adzuna.com/v1/api/jobs/" + country + "/search/" + startingPage + "?"
+        .exchange(url + "/" + api + "/jobs/" + country + "/search/" + startingPage + "?"
                 + "app_id=" + appId + "&app_key=" + appKey
                 + "&results_per_page=" + resultsPerPage + "&title_only=" + jobName,
             HttpMethod.GET, null, new ParameterizedTypeReference<Object>() {}
         );
     if ( Objects.nonNull(apiResponse.getBody())) {
-      Map<String, Object> responseBody = (Map) apiResponse.getBody();
-      List<Map> results
-          = (List<Map>) responseBody.get("results");
+      LinkedHashMap<String, Object> responseBody = (LinkedHashMap) apiResponse.getBody();
+      List<LinkedHashMap<String, Object>> results
+          = (List<LinkedHashMap<String, Object>>) responseBody.get("results");
 
       // iterate through results
-      for (Map result : results) {
+      for (LinkedHashMap<String, Object> result : results) {
         sum = sum + Double.parseDouble(result.get("salary_min").toString());
         totalCount++;
       }

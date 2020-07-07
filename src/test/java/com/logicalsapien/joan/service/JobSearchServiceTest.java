@@ -25,7 +25,7 @@ import org.springframework.web.client.RestTemplate;
  * Job Search Service Tests.
  */
 @SpringBootTest
-public class JobSearchServiceTest {
+class JobSearchServiceTest {
 
   /**
    * Autowire JobSearchService.
@@ -69,7 +69,7 @@ public class JobSearchServiceTest {
     expResponse.setAverageSalary(20d);
 
     Mockito.when(restTemplate.exchange(
-        ArgumentMatchers.contains("/v1/api/jobs/gb/search"),
+        ArgumentMatchers.contains("/jobs/gb/search"),
         ArgumentMatchers.eq(HttpMethod.GET),
         ArgumentMatchers.isNull(),
         ArgumentMatchers.<ParameterizedTypeReference<Object>>any())
