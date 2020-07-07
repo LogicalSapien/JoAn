@@ -51,7 +51,7 @@ public class JobSearchServiceImpl implements JobSearchService {
     String urlToCall = getApiUrl(country, startingPage, resultsPerPage, jobName);
     if (Objects.nonNull(urlToCall)) {
       // call the api as long all the results are fetched
-      while(true) {
+      while (true) {
         ResponseEntity<Object> apiResponse = restTemplate
                 .exchange(urlToCall, HttpMethod.GET, null,
                         new ParameterizedTypeReference<Object>() {});
@@ -63,14 +63,11 @@ public class JobSearchServiceImpl implements JobSearchService {
           // iterate through results
           for (LinkedHashMap<String, Object> result : results) {
             double salaryMin = Double.parseDouble(result.get("salary_min").toString());
-            if (salaryMin > 0 ) {
+            if (salaryMin > 0) {
               sum = sum + salaryMin;
               countForAverage++;
             }
           }
-        } else {
-          // break out of loop
-          break;
         }
         if ((startingPage * resultsPerPage) < totalCount) {
           // continue loop and get next page
@@ -78,7 +75,6 @@ public class JobSearchServiceImpl implements JobSearchService {
         } else {
           break;
         }
-
       }
     }
     JobSearchResponseDto responseDto = new JobSearchResponseDto();
