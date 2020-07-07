@@ -31,7 +31,7 @@ public final class CommonUtils {
    * @param input Input string to strip
    * @returnStripped response
    */
-  public static String stringXss(final String input) {
+  public static String stripXss(final String input) {
     if (isValid(input)) {
       String canocicalized = ESAPI.encoder().canonicalize(input);
       canocicalized = canocicalized.replaceAll("\0", "");

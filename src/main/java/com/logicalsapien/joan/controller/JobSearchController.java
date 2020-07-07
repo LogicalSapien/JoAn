@@ -36,7 +36,7 @@ public class JobSearchController {
       @RequestParam("country") final String country) {
     JobSearchResponseDto searchResult
         = jobSearchService.calculateAverageJobSalary(
-                CommonUtils.stringXss(jobName), CommonUtils.stringXss(country));
+                CommonUtils.stripXss(jobName), CommonUtils.stripXss(country));
     return new ResponseEntity<>(searchResult, HttpStatus.OK);
   }
 
