@@ -12,13 +12,13 @@ import org.springframework.boot.test.context.SpringBootTest;
  * Common utils test.
  */
 @SpringBootTest
-public class CommonUtilsTest {
+class CommonUtilsTest {
 
   /**
    * Strip Xss Test.
    */
   @Test
-  public void stripXssTest() {
+  void stripXssTest() {
     Assertions.assertEquals(
             "sample text", CommonUtils.stripXss("sample text \0 <script></script>"));
   }
@@ -27,7 +27,7 @@ public class CommonUtilsTest {
    * Strip Xss Null Test.
    */
   @Test
-  public void stripXssNullTest() {
+  void stripXssNullTest() {
     Assertions.assertEquals(null, CommonUtils.stripXss(null));
   }
 }
