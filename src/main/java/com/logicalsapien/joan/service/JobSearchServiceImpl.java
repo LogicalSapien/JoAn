@@ -120,7 +120,12 @@ public class JobSearchServiceImpl implements JobSearchService {
    */
   @Override
   public JobSearchResponseDto getRandomJobInfo(final boolean imFeelingLucky) {
-    return null;
+    Long maxResults = null;
+    if (imFeelingLucky) {
+      maxResults = 100L;
+    }
+    return calculateAverageJobSalary(
+            apiService.getRandomJobName(), apiService.getRandomCountryName(), maxResults);
   }
 
   private void parseResponseAndAddData(final ResponseEntity<Object> apiResponse,

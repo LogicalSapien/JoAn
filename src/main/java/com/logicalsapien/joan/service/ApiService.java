@@ -2,8 +2,11 @@ package com.logicalsapien.joan.service;
 
 import static java.util.Map.entry;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -25,12 +28,14 @@ public class ApiService {
   @Value("${adzuna.appKey}")
   private String appKey;
 
-  // this works for any number of elements:
-
   Map<String, String> countryMap = Map.ofEntries(
           entry("uk", "gb"),
           entry("gb", "gb")
   );
+
+  List<String> sampleJobsList = List.of("Java Developer", "Teaching assistant",
+          "Estate agent", "Project manager", "Prison officer", "Accountant", "Social worker",
+          "Councillor", "Photographer", "Graphic designer");
 
   /**
    * Method to get sanitized country short string for forming the url.
@@ -65,5 +70,24 @@ public class ApiService {
     } else {
       return null;
     }
+  }
+
+  /**
+   * Method to return random job name.
+   * @return Random job name
+   */
+  public String getRandomJobName() {
+    int randomNum = ThreadLocalRandom.current().nextInt(0, sampleJobsList.size());
+    return sampleJobsList.get(randomNum);
+  }
+
+  /**
+   * Method to return random country name.
+   * @return Random country name
+   */
+  public String getRandomCountryName() {
+    List<String> countryNames = new ArrayList<>(countryMap.values());
+    int randomNum = ThreadLocalRandom.current().nextInt(0, countryNames.size());
+    return countryNames.get(randomNum);
   }
 }
