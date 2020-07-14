@@ -56,6 +56,8 @@ class JobSearchServiceTest {
     r2.put("salary_min", 30);
     r2.put("salary_max", 40);
     results.add(r2);
+    LinkedHashMap<String, Object> r3 = new LinkedHashMap<>();
+    results.add(r3);
     Map<String, Object> responseBody = new LinkedHashMap<>();
     responseBody.put("results", results);
     // giving 51 to fetch paginated request
