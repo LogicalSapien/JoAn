@@ -24,6 +24,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
 /**
  * Job Search Controller Tests.
  */
@@ -54,6 +56,7 @@ class JobSearchControllerTest {
     resp1.setNoOfJobs(100L);
     resp1.setAverageMinSalary(1000d);
     resp1.setAverageMaxSalary(2000d);
+    resp1.setJobDetails(List.of());
     when(jobSearchService.calculateAverageJobSalary("nametest", "gb"))
         .thenReturn(resp1);
     MockHttpServletResponse response
