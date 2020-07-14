@@ -85,7 +85,7 @@ class JobSearchServiceTest {
 
     // Execute the service call
     JobSearchResponseDto actResponse
-            = jobSearchService.calculateAverageJobSalary("jobname", "gb");
+            = jobSearchService.calculateAverageJobSalary("jobname", "gb", null);
 
     // Assert the response
     Assertions.assertNotNull(actResponse);
@@ -112,7 +112,7 @@ class JobSearchServiceTest {
 
     // Execute the service call
     JobSearchResponseDto actResponse
-            = jobSearchService.calculateAverageJobSalary("jobname", null);
+            = jobSearchService.calculateAverageJobSalary("jobname", "invalid", null);
 
     // Assert the response
     Assertions.assertNotNull(actResponse);

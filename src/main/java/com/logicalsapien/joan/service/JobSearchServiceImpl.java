@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -23,17 +22,8 @@ public class JobSearchServiceImpl implements JobSearchService {
   @Autowired
   RestTemplate restTemplate;
 
-  @Value("${adzuna.url}")
-  private String url;
-
-  @Value("${adzuna.api}")
-  private String api;
-
-  @Value("${adzuna.appId}")
-  private String appId;
-
-  @Value("${adzuna.appKey}")
-  private String appKey;
+  @Autowired
+  ApiService apiService;
   
   /**
    * Total Count String.
@@ -66,11 +56,12 @@ public class JobSearchServiceImpl implements JobSearchService {
    * Get average salary for a particular Job Name.
    * @param jobName Job Name to be searched on
    * @param country Country to be searched on
+   * @param maxResults Maximum results to fetch and consider
    * @return Search Result
    */
   @Override
   public JobSearchResponseDto calculateAverageJobSalary(
-      final String jobName, final String country) {
+      final String jobName, final String country, final Long maxResults) {
     // Create a map to track various counters/values
     Map<String, Double> valueMap = new HashMap<>();
     valueMap.put(TOTAL_COUNT, 0d);
@@ -85,7 +76,8 @@ public class JobSearchServiceImpl implements JobSearchService {
     // query adzuna api
     int startingPage = 1;
     int resultsPerPage = 50;
-    String urlToCall = getApiUrl(country, startingPage, resultsPerPage, jobName);
+    String urlToCall = apiService.getJobSearchApiUrl(
+            country, startingPage, resultsPerPage, jobName);
     if (Objects.nonNull(urlToCall)) {
       // call the api as long all the results are fetched
       while (true) {
@@ -95,7 +87,12 @@ public class JobSearchServiceImpl implements JobSearchService {
         if (Objects.nonNull(apiResponse.getBody())) {
           parseResponseAndAddData(apiResponse, valueMap);
         }
-        if ((startingPage * resultsPerPage) < valueMap.get(TOTAL_COUNT)) {
+        // if max is null and so far fetched count is less than total count, iterate again
+        // or if max is not null and  so far fetched is less than total max results, iterate again
+        int totalResultsFetched = startingPage * resultsPerPage;
+        if ((totalResultsFetched < valueMap.get(TOTAL_COUNT) && maxResults == null)
+              || (maxResults != null && totalResultsFetched < maxResults
+                    && totalResultsFetched < valueMap.get(TOTAL_COUNT))) {
           // continue loop and get next page
           startingPage++;
         } else {
@@ -116,21 +113,14 @@ public class JobSearchServiceImpl implements JobSearchService {
     return responseDto;
   }
 
-  private String getApiUrl(final String country, final int startingPage,
-                           final int resultsPerPage, final String jobName) {
-    if (Objects.nonNull(country) && Objects.nonNull(jobName)) {
-      StringBuilder urlToCall = new StringBuilder(url + "/" + api + "/jobs/");
-      urlToCall.append(country.trim());
-      urlToCall.append("/search/");
-      urlToCall.append(startingPage);
-      urlToCall.append("?app_id=" + appId);
-      urlToCall.append("&app_key=" + appKey);
-      urlToCall.append("&results_per_page=" + resultsPerPage);
-      urlToCall.append("&title_only=" + jobName.trim());
-      return urlToCall.toString();
-    } else {
-      return null;
-    }
+  /**
+   * Get random job info.
+   * @param imFeelingLucky I'm feeling lucky - if true returns first 100 results only.
+   * @return
+   */
+  @Override
+  public JobSearchResponseDto getRandomJobInfo(final boolean imFeelingLucky) {
+    return null;
   }
 
   private void parseResponseAndAddData(final ResponseEntity<Object> apiResponse,

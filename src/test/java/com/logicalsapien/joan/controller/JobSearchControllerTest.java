@@ -56,7 +56,7 @@ class JobSearchControllerTest {
     resp1.setAverageMinSalary(1000d);
     resp1.setAverageMaxSalary(2000d);
     resp1.setJobDetails(List.of());
-    when(jobSearchService.calculateAverageJobSalary("nametest", "gb"))
+    when(jobSearchService.calculateAverageJobSalary("nametest", "gb", null))
         .thenReturn(resp1);
     MockHttpServletResponse response
         = mockMvc.perform(
@@ -69,7 +69,7 @@ class JobSearchControllerTest {
     assertThat(response.getContentAsString(),
         equalTo(getJsonFromObject(resp1)));
     verify(jobSearchService, times(1))
-        .calculateAverageJobSalary("nametest", "gb");
+        .calculateAverageJobSalary("nametest", "gb", null);
   }
 
   /**
