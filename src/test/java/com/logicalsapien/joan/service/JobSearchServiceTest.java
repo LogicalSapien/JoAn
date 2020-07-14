@@ -50,24 +50,24 @@ class JobSearchServiceTest {
     List<LinkedHashMap> results = new ArrayList<>();
     LinkedHashMap<String, Object> r1 = new LinkedHashMap<>();
     r1.put("salary_min", 10);
+    r1.put("salary_max", 20);
     results.add(r1);
     LinkedHashMap<String, Object> r2 = new LinkedHashMap<>();
     r2.put("salary_min", 30);
+    r2.put("salary_max", 40);
     results.add(r2);
     Map<String, Object> responseBody = new LinkedHashMap<>();
     responseBody.put("results", results);
-    responseBody.put("count", 2);
+    // giving 51 to fetch paginated request
+    responseBody.put("count", 51);
     HttpHeaders header = new HttpHeaders();
     header.setContentType(MediaType.APPLICATION_JSON);
-    ResponseEntity apiResponse = new ResponseEntity<>(
-        responseBody,
-        header,
-        HttpStatus.OK
-    );
 
-    JobSearchResponseDto expResponse = new JobSearchResponseDto();
-    expResponse.setNoOfJobs(2L);
-    expResponse.setAverageSalary(20d);
+    ResponseEntity apiResponse = new ResponseEntity<>(
+            responseBody,
+            header,
+            HttpStatus.OK
+    );
 
     Mockito.when(restTemplate.exchange(
         ArgumentMatchers.contains("/jobs/gb/search"),
@@ -76,13 +76,52 @@ class JobSearchServiceTest {
         ArgumentMatchers.<ParameterizedTypeReference<Object>>any())
     ).thenReturn(apiResponse);
 
+    JobSearchResponseDto expResponse = new JobSearchResponseDto();
+    expResponse.setNoOfJobs(51L);
+    expResponse.setAverageMinSalary(20d);
+    expResponse.setAverageMaxSalary(30d);
+
     // Execute the service call
     JobSearchResponseDto actResponse
-        = jobSearchService.calculateAverageJobSalary("jobname", "gb");
+            = jobSearchService.calculateAverageJobSalary("jobname", "gb");
 
     // Assert the response
     Assertions.assertNotNull(actResponse);
     Assertions.assertEquals(expResponse, actResponse);
+
+    // verify that the rest service is called twice
+    Mockito.verify(restTemplate, Mockito.times(2))
+            .exchange(ArgumentMatchers.contains("/jobs/gb/search"),
+                    ArgumentMatchers.eq(HttpMethod.GET),
+                    ArgumentMatchers.isNull(),
+                    ArgumentMatchers.<ParameterizedTypeReference<Object>>any());
+  }
+
+
+  /**
+   * Calculate average job salary - invalid Country - test.
+   */
+  @Test
+  @DisplayName("Calculate average job salary - invalid Country - test")
+  void calculateAverageJobSalaryInvalidCountryTest() {
+
+    JobSearchResponseDto expResponse = new JobSearchResponseDto();
+    expResponse.setNoOfJobs(0L);
+
+    // Execute the service call
+    JobSearchResponseDto actResponse
+            = jobSearchService.calculateAverageJobSalary("jobname", null);
+
+    // Assert the response
+    Assertions.assertNotNull(actResponse);
+    Assertions.assertEquals(expResponse, actResponse);
+
+    // verify that the rest service is not called
+    Mockito.verify(restTemplate, Mockito.times(0))
+            .exchange(ArgumentMatchers.any(),
+                    ArgumentMatchers.eq(HttpMethod.GET),
+                    ArgumentMatchers.isNull(),
+                    ArgumentMatchers.<ParameterizedTypeReference<Object>>any());
   }
 
 }

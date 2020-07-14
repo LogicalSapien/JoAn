@@ -52,7 +52,8 @@ class JobSearchControllerTest {
   void calculateAverageJobSalaryTest() throws Exception {
     JobSearchResponseDto resp1 = new JobSearchResponseDto();
     resp1.setNoOfJobs(100L);
-    resp1.setAverageSalary(1000d);
+    resp1.setAverageMinSalary(1000d);
+    resp1.setAverageMaxSalary(2000d);
     when(jobSearchService.calculateAverageJobSalary("nametest", "gb"))
         .thenReturn(resp1);
     MockHttpServletResponse response

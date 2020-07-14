@@ -1,5 +1,6 @@
 package com.logicalsapien.joan.model;
 
+import java.util.List;
 import lombok.Data;
 
 /**
@@ -14,8 +15,18 @@ public class JobSearchResponseDto {
   private Long noOfJobs;
 
   /**
-   * Average Salary calculated.
+   * Average Min Salary calculated.
    */
-  private Double averageSalary;
+  private Double averageMinSalary;
+
+  /**
+   * Average Max Salary calculated.
+   */
+  private Double averageMaxSalary;
+
+  /**
+   * Job Details list.
+   */
+  private List<JobDetailsDto> jobDetails;
 
 }

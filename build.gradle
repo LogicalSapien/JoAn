@@ -8,6 +8,7 @@ plugins {
 
 // For applying checkstyle configuration
 apply plugin: 'checkstyle'
+apply plugin: 'org.springframework.boot'
 
 group = 'com.logicalsapien'
 version = '0.0.1-SNAPSHOT'
@@ -75,3 +76,5 @@ sonarqube {
 		property "sonar.exclusions", "src/java/test/**"
 	}
 }
+
+jar.enabled = true

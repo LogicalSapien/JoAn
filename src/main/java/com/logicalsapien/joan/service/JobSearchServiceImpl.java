@@ -43,8 +43,10 @@ public class JobSearchServiceImpl implements JobSearchService {
   public JobSearchResponseDto calculateAverageJobSalary(
       final String jobName, final String country) {
     long totalCount = 0;
-    long countForAverage = 0;
-    double sum = 0;
+    long countForMinAverage = 0;
+    long countForMaxAverage = 0;
+    double minSum = 0;
+    double maxSum = 0;
     // query adzuna api
     int startingPage = 1;
     int resultsPerPage = 50;
@@ -63,9 +65,14 @@ public class JobSearchServiceImpl implements JobSearchService {
           // iterate through results
           for (LinkedHashMap<String, Object> result : results) {
             double salaryMin = Double.parseDouble(result.get("salary_min").toString());
+            double salaryMax = Double.parseDouble(result.get("salary_max").toString());
             if (salaryMin > 0) {
-              sum = sum + salaryMin;
-              countForAverage++;
+              minSum = minSum + salaryMin;
+              countForMinAverage++;
+            }
+            if (salaryMax > 0) {
+              maxSum = maxSum + salaryMax;
+              countForMaxAverage++;
             }
           }
         }
@@ -79,8 +86,11 @@ public class JobSearchServiceImpl implements JobSearchService {
     }
     JobSearchResponseDto responseDto = new JobSearchResponseDto();
     responseDto.setNoOfJobs(totalCount);
-    if (countForAverage != 0) {
-      responseDto.setAverageSalary(sum / countForAverage);
+    if (countForMinAverage != 0) {
+      responseDto.setAverageMinSalary(minSum / countForMinAverage);
+    }
+    if (countForMaxAverage != 0) {
+      responseDto.setAverageMaxSalary(maxSum / countForMaxAverage);
     }
     return responseDto;
   }
