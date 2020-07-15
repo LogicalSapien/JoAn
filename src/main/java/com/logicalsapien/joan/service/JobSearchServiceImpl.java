@@ -1,15 +1,17 @@
 package com.logicalsapien.joan.service;
 
-import com.logicalsapien.joan.model.*;
-
+import com.logicalsapien.joan.model.CategoryDto;
+import com.logicalsapien.joan.model.CompanyDto;
+import com.logicalsapien.joan.model.JobDetailsDto;
+import com.logicalsapien.joan.model.JobSearchResponseDto;
+import com.logicalsapien.joan.model.LocationDto;
+import com.logicalsapien.joan.utils.CommonUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import com.logicalsapien.joan.utils.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
