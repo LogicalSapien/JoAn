@@ -59,13 +59,13 @@ public class ApiService {
     String jobNameToSearch = jobName.toLowerCase();
     if (Objects.nonNull(sanitizedCountry) && Objects.nonNull(jobNameToSearch)) {
       StringBuilder urlToCall = new StringBuilder(url + "/" + api + "/jobs/");
-      urlToCall.append(country.trim());
+      urlToCall.append(sanitizedCountry.trim());
       urlToCall.append("/search/");
       urlToCall.append(startingPage);
       urlToCall.append("?app_id=" + appId);
       urlToCall.append("&app_key=" + appKey);
       urlToCall.append("&results_per_page=" + resultsPerPage);
-      urlToCall.append("&title_only=" + jobName.trim());
+      urlToCall.append("&title_only=" + jobNameToSearch.trim());
       return urlToCall.toString();
     } else {
       return null;
