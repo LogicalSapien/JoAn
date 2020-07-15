@@ -6,6 +6,7 @@ import com.logicalsapien.joan.model.JobDetailsDto;
 import com.logicalsapien.joan.model.JobSearchResponseDto;
 import com.logicalsapien.joan.model.LocationDto;
 import com.logicalsapien.joan.utils.CommonUtils;
+import com.logicalsapien.joan.utils.JConstants;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -60,8 +61,6 @@ public class JobSearchServiceImpl implements JobSearchService {
    * Salary Max Sum String.
    */
   private static final String MAX_SUM = "maxSum";
-
-
 
   /**
    * Get average salary for a particular Job Name.
@@ -199,7 +198,9 @@ public class JobSearchServiceImpl implements JobSearchService {
     if (Objects.nonNull(result.get("location"))) {
       Map<String, Object> location = (Map) result.get("location");
       LocationDto locationDto = new LocationDto();
-      locationDto.setDisplayName(location.get("display_name").toString());
+      if (Objects.nonNull(location.get(JConstants.DISPLAY_NAME))) {
+        locationDto.setDisplayName(location.get(JConstants.DISPLAY_NAME).toString());
+      }
       locationDto.setArea((List<String>)location.get("area"));
       jobDetailsDto.setLocation(locationDto);
     }
@@ -213,7 +214,9 @@ public class JobSearchServiceImpl implements JobSearchService {
     if (Objects.nonNull(result.get("company"))) {
       Map<String, Object> company = (Map) result.get("company");
       CompanyDto companyDto = new CompanyDto();
-      companyDto.setDisplayName(company.get("display_name").toString());
+      if (Objects.nonNull(company.get(JConstants.DISPLAY_NAME))) {
+        companyDto.setDisplayName(company.get(JConstants.DISPLAY_NAME).toString());
+      }
       jobDetailsDto.setCompany(companyDto);
     }
   }
