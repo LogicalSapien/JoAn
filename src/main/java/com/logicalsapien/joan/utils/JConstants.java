@@ -15,5 +15,5 @@ public final class JConstants {
   /**
    * Display Name String.
    */
-  public static final String DISPLAY_NAME = "displayName";
+  public static final String DISPLAY_NAME = "display_name";
 }

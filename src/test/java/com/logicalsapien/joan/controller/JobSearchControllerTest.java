@@ -72,6 +72,35 @@ class JobSearchControllerTest {
         .calculateAverageJobSalary("nametest", "gb", null);
   }
 
+
+  /**
+   * Get random job details test.
+   * @throws Exception exception
+   */
+  @Test
+  @DisplayName("Get random job details test")
+  void getRandomJobResponseTest() throws Exception {
+    JobSearchResponseDto resp1 = new JobSearchResponseDto();
+    resp1.setFetchedJobs(100L);
+    resp1.setAverageMinSalary(1000d);
+    resp1.setAverageMaxSalary(2000d);
+    resp1.setJobDetails(List.of());
+    when(jobSearchService.getRandomJobInfo(true))
+            .thenReturn(resp1);
+    MockHttpServletResponse response
+            = mockMvc.perform(
+            get("/jobsearch/random")
+                    .accept(MediaType.APPLICATION_JSON))
+            .andReturn().getResponse();
+
+    /* Assert */
+    assertThat(response.getStatus(), equalTo(HttpStatus.OK.value()));
+    assertThat(response.getContentAsString(),
+            equalTo(getJsonFromObject(resp1)));
+    verify(jobSearchService, times(1))
+            .getRandomJobInfo(true);
+  }
+
   /**
    * To Convert an Object to JSON String.
    * @param o Object

@@ -48,7 +48,8 @@ public class JobSearchController {
    */
   @GetMapping("random")
   public ResponseEntity<JobSearchResponseDto> getRandomJobResponse(
-          @RequestParam("imFeelingLucky") final boolean imFeelingLucky) {
+          @RequestParam(value = "imFeelingLucky", required = false,
+                  defaultValue = "true") final boolean imFeelingLucky) {
     JobSearchResponseDto searchResult
             = jobSearchService.getRandomJobInfo(imFeelingLucky);
     return new ResponseEntity<>(searchResult, HttpStatus.OK);
