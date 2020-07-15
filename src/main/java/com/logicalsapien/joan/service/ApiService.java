@@ -53,8 +53,8 @@ public class ApiService {
    * @param jobName job name to search
    * @return Url
    */
-  public String getJobSearchApiUrl(final String country, final int startingPage,
-                           final int resultsPerPage, final String jobName) {
+  public String getJobSearchApiUrl(final String country, final long startingPage,
+                           final long resultsPerPage, final String jobName) {
     String sanitizedCountry = getCountryShort(country);
     String jobNameToSearch = jobName.toLowerCase();
     if (Objects.nonNull(sanitizedCountry) && Objects.nonNull(jobNameToSearch)) {

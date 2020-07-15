@@ -1,5 +1,6 @@
 package com.logicalsapien.joan.service;
 
+import com.logicalsapien.joan.model.JobDetailsDto;
 import com.logicalsapien.joan.model.JobSearchResponseDto;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -79,9 +80,18 @@ class JobSearchServiceTest {
     ).thenReturn(apiResponse);
 
     JobSearchResponseDto expResponse = new JobSearchResponseDto();
-    expResponse.setNoOfJobs(51L);
+    expResponse.setFetchedJobs(6L);
+    expResponse.setTotalNoJobs(51L);
     expResponse.setAverageMinSalary(20d);
     expResponse.setAverageMaxSalary(30d);
+    JobDetailsDto jd1 = new JobDetailsDto();
+    jd1.setSalaryMin(10d);
+    jd1.setSalaryMax(20d);
+    JobDetailsDto jd2 = new JobDetailsDto();
+    jd2.setSalaryMin(30d);
+    jd2.setSalaryMax(40d);
+    JobDetailsDto jd3 = new JobDetailsDto();
+    expResponse.setJobDetails(List.of(jd1, jd2, jd3, jd1, jd2, jd3));
 
     // Execute the service call
     JobSearchResponseDto actResponse
@@ -92,8 +102,13 @@ class JobSearchServiceTest {
     Assertions.assertEquals(expResponse, actResponse);
 
     // verify that the rest service is called twice
-    Mockito.verify(restTemplate, Mockito.times(2))
-            .exchange(ArgumentMatchers.contains("/jobs/gb/search"),
+    Mockito.verify(restTemplate, Mockito.times(1))
+            .exchange(ArgumentMatchers.contains("/jobs/gb/search/1"),
+                    ArgumentMatchers.eq(HttpMethod.GET),
+                    ArgumentMatchers.isNull(),
+                    ArgumentMatchers.<ParameterizedTypeReference<Object>>any());
+    Mockito.verify(restTemplate, Mockito.times(1))
+            .exchange(ArgumentMatchers.contains("/jobs/gb/search/2"),
                     ArgumentMatchers.eq(HttpMethod.GET),
                     ArgumentMatchers.isNull(),
                     ArgumentMatchers.<ParameterizedTypeReference<Object>>any());
@@ -108,7 +123,8 @@ class JobSearchServiceTest {
   void calculateAverageJobSalaryInvalidCountryTest() {
 
     JobSearchResponseDto expResponse = new JobSearchResponseDto();
-    expResponse.setNoOfJobs(0L);
+    expResponse.setFetchedJobs(0L);
+    expResponse.setTotalNoJobs(0L);
 
     // Execute the service call
     JobSearchResponseDto actResponse

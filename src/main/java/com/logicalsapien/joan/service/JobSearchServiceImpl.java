@@ -1,11 +1,15 @@
 package com.logicalsapien.joan.service;
 
-import com.logicalsapien.joan.model.JobSearchResponseDto;
+import com.logicalsapien.joan.model.*;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import com.logicalsapien.joan.utils.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -29,6 +33,11 @@ public class JobSearchServiceImpl implements JobSearchService {
    * Total Count String.
    */
   private static final String TOTAL_COUNT = "totalCount";
+
+  /**
+   * Fetched Count String.
+   */
+  private static final String FETCHED_COUNT = "fetchedCount";
 
   /**
    * Count for min average String.
@@ -65,6 +74,7 @@ public class JobSearchServiceImpl implements JobSearchService {
     // Create a map to track various counters/values
     Map<String, Double> valueMap = new HashMap<>();
     valueMap.put(TOTAL_COUNT, 0d);
+    valueMap.put(FETCHED_COUNT, 0d);
     // to keep the track on the number of min salaries added
     valueMap.put(MIN_AVERAGE_CNT, 0d);
     // to keep the track on the number of max salaries added
@@ -74,22 +84,24 @@ public class JobSearchServiceImpl implements JobSearchService {
     // sum on all minimum salaries
     valueMap.put(MAX_SUM, 0d);
     // query adzuna api
-    int startingPage = 1;
-    int resultsPerPage = 50;
+    long startingPage = 1;
+    long resultsPerPage = 50;
+    JobSearchResponseDto responseDto = new JobSearchResponseDto();
     String urlToCall = apiService.getJobSearchApiUrl(
             country, startingPage, resultsPerPage, jobName);
     if (Objects.nonNull(urlToCall)) {
+      responseDto.setJobDetails(new ArrayList<>());
       // call the api as long all the results are fetched
       while (true) {
         ResponseEntity<Object> apiResponse = restTemplate
                 .exchange(urlToCall, HttpMethod.GET, null,
                         new ParameterizedTypeReference<Object>() {});
         if (Objects.nonNull(apiResponse.getBody())) {
-          parseResponseAndAddData(apiResponse, valueMap);
+          parseResponseAndAddData(apiResponse, valueMap, responseDto);
         }
         // if max is null and so far fetched count is less than total count, iterate again
         // or if max is not null and  so far fetched is less than total max results, iterate again
-        int totalResultsFetched = startingPage * resultsPerPage;
+        long totalResultsFetched = startingPage * resultsPerPage;
         if ((totalResultsFetched < valueMap.get(TOTAL_COUNT) && maxResults == null)
               || (maxResults != null && totalResultsFetched < maxResults
                     && totalResultsFetched < valueMap.get(TOTAL_COUNT))) {
@@ -98,10 +110,13 @@ public class JobSearchServiceImpl implements JobSearchService {
         } else {
           break;
         }
+        // get next url to call
+        urlToCall = apiService.getJobSearchApiUrl(
+                country, startingPage, resultsPerPage, jobName);
       }
     }
-    JobSearchResponseDto responseDto = new JobSearchResponseDto();
-    responseDto.setNoOfJobs(valueMap.get(TOTAL_COUNT).longValue());
+    responseDto.setTotalNoJobs(valueMap.get(TOTAL_COUNT).longValue());
+    responseDto.setFetchedJobs(valueMap.get(FETCHED_COUNT).longValue());
     if (valueMap.get(MIN_AVERAGE_CNT) != 0) {
       responseDto.setAverageMinSalary(
               valueMap.get(MIN_SUM) / valueMap.get(MIN_AVERAGE_CNT));
@@ -129,7 +144,8 @@ public class JobSearchServiceImpl implements JobSearchService {
   }
 
   private void parseResponseAndAddData(final ResponseEntity<Object> apiResponse,
-                                       final Map<String, Double> valueMap) {
+                                       final Map<String, Double> valueMap,
+                                       final JobSearchResponseDto responseDto) {
 
     LinkedHashMap<String, Object> responseBody = (LinkedHashMap) apiResponse.getBody();
     valueMap.put(TOTAL_COUNT, Double.parseDouble(responseBody.get("count").toString()));
@@ -137,20 +153,66 @@ public class JobSearchServiceImpl implements JobSearchService {
             = (List<LinkedHashMap<String, Object>>) responseBody.get("results");
     // iterate through results
     for (LinkedHashMap<String, Object> result : results) {
-      if (Objects.nonNull(result.get("salary_min"))) {
-        double salaryMin = Double.parseDouble(result.get("salary_min").toString());
-        if (salaryMin > 0) {
-          valueMap.put(MIN_SUM, valueMap.get(MIN_SUM) + salaryMin);
-          valueMap.put(MIN_AVERAGE_CNT, valueMap.get(MIN_AVERAGE_CNT) + 1);
-        }
+      JobDetailsDto jobDetailsDto = new JobDetailsDto();
+      setJobDetailsInfo(result, jobDetailsDto);
+      if (Objects.nonNull(jobDetailsDto.getSalaryMin())
+            && jobDetailsDto.getSalaryMin() > 0) {
+        valueMap.put(MIN_SUM, valueMap.get(MIN_SUM) + jobDetailsDto.getSalaryMin());
+        valueMap.put(MIN_AVERAGE_CNT, valueMap.get(MIN_AVERAGE_CNT) + 1);
       }
-      if (Objects.nonNull(result.get("salary_max"))) {
-        double salaryMax = Double.parseDouble(result.get("salary_max").toString());
-        if (salaryMax > 0) {
-          valueMap.put(MAX_SUM, valueMap.get(MAX_SUM) + salaryMax);
-          valueMap.put(MAX_AVERAGE_CNT, valueMap.get(MAX_AVERAGE_CNT) + 1);
-        }
+      if (Objects.nonNull(jobDetailsDto.getSalaryMax())
+              && jobDetailsDto.getSalaryMax() > 0) {
+        valueMap.put(MAX_SUM, valueMap.get(MAX_SUM) + jobDetailsDto.getSalaryMax());
+        valueMap.put(MAX_AVERAGE_CNT, valueMap.get(MAX_AVERAGE_CNT) + 1);
       }
+      // add results to response dto
+      responseDto.getJobDetails().add(jobDetailsDto);
+      valueMap.put(FETCHED_COUNT, valueMap.get(FETCHED_COUNT) + 1);
+    }
+  }
+
+  private void setJobDetailsInfo(final LinkedHashMap<String, Object> result,
+                                 final JobDetailsDto jobDetailsDto) {
+    if (Objects.nonNull(result.get("id"))) {
+      jobDetailsDto.setId(result.get("id").toString());
+    }
+    if (Objects.nonNull(result.get("title"))) {
+      jobDetailsDto.setTitle(CommonUtils.stripXss(result.get("title").toString()));
+    }
+    if (Objects.nonNull(result.get("description"))) {
+      jobDetailsDto.setDescription(result.get("description").toString());
+    }
+    if (Objects.nonNull(result.get("salary_min"))) {
+      jobDetailsDto.setSalaryMin(Double.parseDouble(result.get("salary_min").toString()));
+    }
+    if (Objects.nonNull(result.get("salary_max"))) {
+      jobDetailsDto.setSalaryMax(Double.parseDouble(result.get("salary_max").toString()));
+    }
+    if (Objects.nonNull(result.get("latitude"))) {
+      jobDetailsDto.setLatitude(Double.parseDouble(result.get("latitude").toString()));
+    }
+    if (Objects.nonNull(result.get("longitude"))) {
+      jobDetailsDto.setLongitude(Double.parseDouble(result.get("longitude").toString()));
+    }
+    if (Objects.nonNull(result.get("location"))) {
+      Map<String, Object> location = (Map) result.get("location");
+      LocationDto locationDto = new LocationDto();
+      locationDto.setDisplayName(location.get("display_name").toString());
+      locationDto.setArea((List<String>)location.get("area"));
+      jobDetailsDto.setLocation(locationDto);
+    }
+    if (Objects.nonNull(result.get("category"))) {
+      Map<String, Object> category = (Map) result.get("category");
+      CategoryDto categoryDto = new CategoryDto();
+      categoryDto.setTag(category.get("tag").toString());
+      categoryDto.setLabel(category.get("label").toString());
+      jobDetailsDto.setCategory(categoryDto);
+    }
+    if (Objects.nonNull(result.get("company"))) {
+      Map<String, Object> company = (Map) result.get("company");
+      CompanyDto companyDto = new CompanyDto();
+      companyDto.setDisplayName(company.get("display_name").toString());
+      jobDetailsDto.setCompany(companyDto);
     }
   }
 }

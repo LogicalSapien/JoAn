@@ -26,22 +26,22 @@ public class JobDetailsDto {
   /**
    * Salary Min.
    */
-  private double salaryMin;
+  private Double salaryMin;
 
   /**
    * Salary Max.
    */
-  private double salaryMax;
+  private Double salaryMax;
 
   /**
    * Latitude info.
    */
-  private double latitude;
+  private Double latitude;
 
   /**
    * Longitude info.
    */
-  private double longitude;
+  private Double longitude;
 
   /**
    * Location info.

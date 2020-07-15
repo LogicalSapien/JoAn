@@ -52,7 +52,7 @@ class JobSearchControllerTest {
   @DisplayName("Get average salary for a particular Job Name test")
   void calculateAverageJobSalaryTest() throws Exception {
     JobSearchResponseDto resp1 = new JobSearchResponseDto();
-    resp1.setNoOfJobs(100L);
+    resp1.setFetchedJobs(100L);
     resp1.setAverageMinSalary(1000d);
     resp1.setAverageMaxSalary(2000d);
     resp1.setJobDetails(List.of());

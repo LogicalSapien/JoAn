@@ -12,7 +12,12 @@ public class JobSearchResponseDto {
   /**
    * No Of Jobs fetched.
    */
-  private Long noOfJobs;
+  private Long fetchedJobs;
+
+  /**
+   * Total No Of Jobs fetched.
+   */
+  private Long totalNoJobs;
 
   /**
    * Average Min Salary calculated.
