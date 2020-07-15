@@ -53,6 +53,7 @@ class JobSearchControllerTest {
   void calculateAverageJobSalaryTest() throws Exception {
     JobSearchResponseDto resp1 = new JobSearchResponseDto();
     resp1.setFetchedJobs(100L);
+    resp1.setTotalNoJobs(100L);
     resp1.setAverageMinSalary(1000d);
     resp1.setAverageMaxSalary(2000d);
     resp1.setJobDetails(List.of());
@@ -82,6 +83,7 @@ class JobSearchControllerTest {
   void getRandomJobResponseTest() throws Exception {
     JobSearchResponseDto resp1 = new JobSearchResponseDto();
     resp1.setFetchedJobs(100L);
+    resp1.setTotalNoJobs(100L);
     resp1.setAverageMinSalary(1000d);
     resp1.setAverageMaxSalary(2000d);
     resp1.setJobDetails(List.of());
