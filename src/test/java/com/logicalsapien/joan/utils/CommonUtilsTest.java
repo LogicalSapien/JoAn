@@ -15,6 +15,30 @@ import org.springframework.boot.test.context.SpringBootTest;
 class CommonUtilsTest {
 
   /**
+   * is valid True Test.
+   */
+  @Test
+  void isValidTrueTest() {
+    Assertions.assertTrue(CommonUtils.isValid("text"));
+  }
+
+  /**
+   * is valid False Test.
+   */
+  @Test
+  void isValidFalseEmptyTest() {
+    Assertions.assertFalse(CommonUtils.isValid(""));
+  }
+
+  /**
+   * is valid False Test.
+   */
+  @Test
+  void isValidFalseTest() {
+    Assertions.assertFalse(CommonUtils.isValid(" "));
+  }
+
+  /**
    * Strip Xss Test.
    */
   @Test
