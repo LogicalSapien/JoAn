@@ -72,7 +72,7 @@ public class JobSearchServiceImpl implements JobSearchService {
   @Override
   public JobSearchResponseDto searchJob(final JobSearchRequestDto jobSearchRequest) {
     // validate Pagination request
-    if (Objects.nonNull(jobSearchRequest.getPagination())) {
+    if (Objects.isNull(jobSearchRequest.getPagination())) {
       jobSearchRequest.setPagination(new PaginationDto());
     }
     validatePaginationRequest(jobSearchRequest.getPagination());
@@ -93,8 +93,8 @@ public class JobSearchServiceImpl implements JobSearchService {
               && Objects.nonNull(responseBody.get(JConstants.RESULTS))) {
         List<LinkedHashMap<String, Object>> results
                 = (List<LinkedHashMap<String, Object>>) responseBody.get(JConstants.RESULTS);
-        JobDetailsDto jobDetailsDto = new JobDetailsDto();
         for (LinkedHashMap<String, Object> result : results) {
+          JobDetailsDto jobDetailsDto = new JobDetailsDto();
           mapToJobDetailsDto(result, jobDetailsDto);
           // add results to response dto
           responseDto.getJobDetails().add(jobDetailsDto);
