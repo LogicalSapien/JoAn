@@ -34,14 +34,4 @@ public class JobSearchResponseDto {
    */
   private List<JobDetailsDto> jobDetails;
 
-  /**
-   * Contract Type.
-   */
-  private String contractType;
-
-  /**
-   * Created Time.
-   */
-  private String created;
-
 }

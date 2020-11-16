@@ -1,15 +1,13 @@
 package com.logicalsapien.joan.controller;
 
+import com.logicalsapien.joan.model.JobSearchRequestDto;
 import com.logicalsapien.joan.model.JobSearchResponseDto;
 import com.logicalsapien.joan.service.JobSearchService;
 import com.logicalsapien.joan.utils.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Job Search Controller.
@@ -23,6 +21,19 @@ public class JobSearchController {
    */
   @Autowired
   private JobSearchService jobSearchService;
+
+  /**
+   * Search for jobs..
+   * @param jobSearchRequest Job Search Request
+   * @return Search Result
+   */
+  @PostMapping()
+  public ResponseEntity<JobSearchResponseDto> calculateAverageJobSalary(
+          @RequestBody final JobSearchRequestDto jobSearchRequest) {
+    JobSearchResponseDto searchResult
+            = jobSearchService.searchJob(jobSearchRequest);
+    return new ResponseEntity<>(searchResult, HttpStatus.OK);
+  }
 
   /**
    * Get average salary for a particular Job Name.

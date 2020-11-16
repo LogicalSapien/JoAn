@@ -58,4 +58,19 @@ public class JobDetailsDto {
    */
   private CompanyDto company;
 
+  /**
+   * Contract Type.
+   */
+  private String contractType;
+
+  /**
+   * Created Time.
+   */
+  private String created;
+
+  /**
+   * Redirect Url.
+   */
+  private String redirectUrl;
+
 }

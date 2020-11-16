@@ -2,6 +2,7 @@ package com.logicalsapien.joan.service;
 
 import static java.util.Map.entry;
 
+import com.logicalsapien.joan.model.JobSearchRequestDto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +71,25 @@ public class ApiService {
     } else {
       return null;
     }
+  }
+
+  /**
+   * Job Search Api.
+   * @param searchRequest Job Search Request
+   * @return Url
+   */
+  public String getJobSearchApiUrl(final JobSearchRequestDto searchRequest) {
+    String sanitizedCountry = getCountryShort(searchRequest.getCountry());
+    String what = searchRequest.getQuery().toLowerCase();
+    StringBuilder urlToCall = new StringBuilder(url + "/" + api + "/jobs/");
+    urlToCall.append(sanitizedCountry.trim());
+    urlToCall.append("/search/");
+    urlToCall.append(searchRequest.getPagination().getPage());
+    urlToCall.append("?app_id=" + appId);
+    urlToCall.append("&app_key=" + appKey);
+    urlToCall.append("&results_per_page=" + searchRequest.getPagination().getSize());
+    // urlToCall.append("&title_only=" + jobNameToSearch.trim());
+    return urlToCall.toString();
   }
 
   /**

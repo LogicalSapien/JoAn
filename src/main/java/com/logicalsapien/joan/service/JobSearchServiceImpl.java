@@ -3,8 +3,10 @@ package com.logicalsapien.joan.service;
 import com.logicalsapien.joan.model.CategoryDto;
 import com.logicalsapien.joan.model.CompanyDto;
 import com.logicalsapien.joan.model.JobDetailsDto;
+import com.logicalsapien.joan.model.JobSearchRequestDto;
 import com.logicalsapien.joan.model.JobSearchResponseDto;
 import com.logicalsapien.joan.model.LocationDto;
+import com.logicalsapien.joan.model.PaginationDto;
 import com.logicalsapien.joan.utils.CommonUtils;
 import com.logicalsapien.joan.utils.JConstants;
 import java.util.ArrayList;
@@ -64,6 +66,46 @@ public class JobSearchServiceImpl implements JobSearchService {
 
   /**
    * Get average salary for a particular Job Name.
+   * @param jobSearchRequest Job Request
+   * @return Search Result
+   */
+  @Override
+  public JobSearchResponseDto searchJob(final JobSearchRequestDto jobSearchRequest) {
+    // validate Pagination request
+    if (Objects.nonNull(jobSearchRequest.getPagination())) {
+      jobSearchRequest.setPagination(new PaginationDto());
+    }
+    validatePaginationRequest(jobSearchRequest.getPagination());
+    if (Objects.nonNull(jobSearchRequest.getCountry())) {
+      jobSearchRequest.setCountry("uk");
+    }
+    // query adzuna api
+    JobSearchResponseDto responseDto = new JobSearchResponseDto();
+    String urlToCall = apiService.getJobSearchApiUrl(jobSearchRequest);
+    responseDto.setJobDetails(new ArrayList<>());
+    // call the api
+    ResponseEntity<Object> apiResponse = restTemplate
+            .exchange(urlToCall, HttpMethod.GET, null,
+                    new ParameterizedTypeReference<Object>() {});
+    if (Objects.nonNull(apiResponse.getBody())) {
+      LinkedHashMap<String, Object> responseBody = (LinkedHashMap) apiResponse.getBody();
+      if (Objects.nonNull(responseBody)
+              && Objects.nonNull(responseBody.get(JConstants.RESULTS))) {
+        List<LinkedHashMap<String, Object>> results
+                = (List<LinkedHashMap<String, Object>>) responseBody.get(JConstants.RESULTS);
+        JobDetailsDto jobDetailsDto = new JobDetailsDto();
+        for (LinkedHashMap<String, Object> result : results) {
+          mapToJobDetailsDto(result, jobDetailsDto);
+          // add results to response dto
+          responseDto.getJobDetails().add(jobDetailsDto);
+        }
+      }
+    }
+    return responseDto;
+  }
+
+  /**
+   * Get average salary for a particular Job Name.
    * @param jobName Job Name to be searched on
    * @param country Country to be searched on
    * @param maxResults Maximum results to fetch and consider
@@ -108,13 +150,12 @@ public class JobSearchServiceImpl implements JobSearchService {
                     && totalResultsFetched < valueMap.get(TOTAL_COUNT))) {
           // continue loop and get next page
           startingPage++;
-          break;
         } else {
           break;
         }
         // get next url to call
-//        urlToCall = apiService.getJobSearchApiUrl(
-//                country, startingPage, resultsPerPage, jobName);
+        urlToCall = apiService.getJobSearchApiUrl(
+                country, startingPage, resultsPerPage, jobName);
       }
     }
     responseDto.setTotalNoJobs(valueMap.get(TOTAL_COUNT).longValue());
@@ -133,7 +174,7 @@ public class JobSearchServiceImpl implements JobSearchService {
   /**
    * Get random job info.
    * @param imFeelingLucky I'm feeling lucky - if true returns first 100 results only.
-   * @return
+   * @return Job search response
    */
   @Override
   public JobSearchResponseDto getRandomJobInfo(final boolean imFeelingLucky) {
@@ -152,11 +193,11 @@ public class JobSearchServiceImpl implements JobSearchService {
     LinkedHashMap<String, Object> responseBody = (LinkedHashMap) apiResponse.getBody();
     valueMap.put(TOTAL_COUNT, Double.parseDouble(responseBody.get("count").toString()));
     List<LinkedHashMap<String, Object>> results
-            = (List<LinkedHashMap<String, Object>>) responseBody.get("results");
+            = (List<LinkedHashMap<String, Object>>) responseBody.get(JConstants.RESULTS);
     // iterate through results
     for (LinkedHashMap<String, Object> result : results) {
       JobDetailsDto jobDetailsDto = new JobDetailsDto();
-      setJobDetailsInfo(result, jobDetailsDto);
+      mapToJobDetailsDto(result, jobDetailsDto);
       if (Objects.nonNull(jobDetailsDto.getSalaryMin())
             && jobDetailsDto.getSalaryMin() > 0) {
         valueMap.put(MIN_SUM, valueMap.get(MIN_SUM) + jobDetailsDto.getSalaryMin());
@@ -173,8 +214,9 @@ public class JobSearchServiceImpl implements JobSearchService {
     }
   }
 
-  private void setJobDetailsInfo(final LinkedHashMap<String, Object> result,
-                                 final JobDetailsDto jobDetailsDto) {
+  @SuppressWarnings("squid:S3776")
+  private void mapToJobDetailsDto(final LinkedHashMap<String, Object> result,
+                                  final JobDetailsDto jobDetailsDto) {
     if (Objects.nonNull(result.get("id"))) {
       jobDetailsDto.setId(result.get("id").toString());
     }
@@ -219,6 +261,32 @@ public class JobSearchServiceImpl implements JobSearchService {
         companyDto.setDisplayName(company.get(JConstants.DISPLAY_NAME).toString());
       }
       jobDetailsDto.setCompany(companyDto);
+    }
+    if (Objects.nonNull(result.get("created"))) {
+      jobDetailsDto.setCreated(result.get("created").toString());
+    }
+    if (Objects.nonNull(result.get("contract_type"))) {
+      jobDetailsDto.setContractType(result.get("contract_type").toString());
+    }
+    if (Objects.nonNull(result.get("redirect_url"))) {
+      jobDetailsDto.setRedirectUrl(result.get("redirect_url").toString());
+    }
+  }
+
+  /**
+   * Validate Pagination.
+   * @param paginationDto Pagination Dto.
+   */
+  private void validatePaginationRequest(PaginationDto paginationDto) {
+    if (paginationDto.getPage() <= 0) {
+      paginationDto.setPage(1);
+    }
+    if (paginationDto.getSize() <= 0) {
+      paginationDto.setSize(10);
+    }
+    if (!CommonUtils.isValid(paginationDto.getSort())) {
+      // remove if any no string value is there
+      paginationDto.setSort(null);
     }
   }
 }

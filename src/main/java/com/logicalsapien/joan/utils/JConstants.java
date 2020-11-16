@@ -16,4 +16,9 @@ public final class JConstants {
    * Display Name String.
    */
   public static final String DISPLAY_NAME = "display_name";
+
+  /**
+   * Results String.
+   */
+  public static final String RESULTS = "results";
 }

@@ -11,22 +11,23 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class ApiOriginsConfig implements WebMvcConfigurer {
 
-    /**
-     * Origins allowed to accept request.
-     */
-    @Value("${origins.allowed}")
-    private String[] originsAllowed;
+  /**
+   * Origins allowed to accept request.
+   */
+  @Value("${origins.allowed}")
+  private String[] originsAllowed;
 
-    /**
-     * Override cors mappings
-     * @param registry Cors Registry
-     */
-    public void addCorsMappings(final CorsRegistry registry) {
-        String[] exposeHeaders = {"Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"};
+  /**
+   * Override cors mappings.
+   * @param registry Cors Registry
+   */
+  @Override
+  public void addCorsMappings(final CorsRegistry registry) {
+    String[] exposeHeaders = {"Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"};
 
-        registry.addMapping("/**").allowedOrigins(originsAllowed)
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .exposedHeaders(exposeHeaders).allowCredentials(true);
-    }
+    registry.addMapping("/**").allowedOrigins(originsAllowed)
+            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+            .exposedHeaders(exposeHeaders).allowCredentials(true);
+  }
 
 }

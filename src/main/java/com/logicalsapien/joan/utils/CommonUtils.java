@@ -34,7 +34,7 @@ public final class CommonUtils {
   public static String stripXss(final String input) {
     if (isValid(input)) {
       String canocicalized = ESAPI.encoder().canonicalize(input);
-      canocicalized = canocicalized.replaceAll("\0", "");
+      canocicalized = canocicalized.replace("\0", "");
       canocicalized = Jsoup.clean(canocicalized, Whitelist.none());
       return StringEscapeUtils.escapeHtml(canocicalized);
     } else {

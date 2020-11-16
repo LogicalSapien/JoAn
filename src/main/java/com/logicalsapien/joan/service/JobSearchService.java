@@ -1,11 +1,18 @@
 package com.logicalsapien.joan.service;
 
+import com.logicalsapien.joan.model.JobSearchRequestDto;
 import com.logicalsapien.joan.model.JobSearchResponseDto;
 
 /**
  * Job Search Service.
  */
 public interface JobSearchService {
+
+  /**
+   * @param jobSearchRequest Job Request
+   * @return Search Response
+   */
+  JobSearchResponseDto searchJob(JobSearchRequestDto jobSearchRequest);
 
   /**
    * Get average salary for a particular Job Name.
