@@ -108,12 +108,13 @@ public class JobSearchServiceImpl implements JobSearchService {
                     && totalResultsFetched < valueMap.get(TOTAL_COUNT))) {
           // continue loop and get next page
           startingPage++;
+          break;
         } else {
           break;
         }
         // get next url to call
-        urlToCall = apiService.getJobSearchApiUrl(
-                country, startingPage, resultsPerPage, jobName);
+//        urlToCall = apiService.getJobSearchApiUrl(
+//                country, startingPage, resultsPerPage, jobName);
       }
     }
     responseDto.setTotalNoJobs(valueMap.get(TOTAL_COUNT).longValue());
