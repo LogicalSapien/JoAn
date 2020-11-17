@@ -23,4 +23,9 @@ public class PaginationDto {
    */
   private String sort;
 
+  /**
+   * Total count.
+   */
+  private int count;
+
 }

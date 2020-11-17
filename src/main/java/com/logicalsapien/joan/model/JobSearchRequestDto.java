@@ -48,4 +48,9 @@ public class JobSearchRequestDto {
    */
   private PaginationDto pagination;
 
+  /**
+   * Enable pagination View - if disabled it'll  show infine scroll.
+   */
+  private boolean paginatedView;
+
 }

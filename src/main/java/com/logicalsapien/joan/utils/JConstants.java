@@ -21,4 +21,9 @@ public final class JConstants {
    * Results String.
    */
   public static final String RESULTS = "results";
+
+  /**
+   * Total count String.
+   */
+  public static final String TOTAL_COUNT = "count";
 }

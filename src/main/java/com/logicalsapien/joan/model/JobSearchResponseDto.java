@@ -34,4 +34,9 @@ public class JobSearchResponseDto {
    */
   private List<JobDetailsDto> jobDetails;
 
+  /**
+   * Search Query.
+   */
+  private PaginationDto pagination;
+
 }

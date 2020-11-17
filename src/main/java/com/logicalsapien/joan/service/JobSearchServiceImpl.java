@@ -81,6 +81,7 @@ public class JobSearchServiceImpl implements JobSearchService {
     }
     // query adzuna api
     JobSearchResponseDto responseDto = new JobSearchResponseDto();
+    responseDto.setPagination(jobSearchRequest.getPagination());
     String urlToCall = apiService.getJobSearchApiUrl(jobSearchRequest);
     responseDto.setJobDetails(new ArrayList<>());
     // call the api
@@ -90,9 +91,11 @@ public class JobSearchServiceImpl implements JobSearchService {
     if (Objects.nonNull(apiResponse.getBody())) {
       LinkedHashMap<String, Object> responseBody = (LinkedHashMap) apiResponse.getBody();
       if (Objects.nonNull(responseBody)
-              && Objects.nonNull(responseBody.get(JConstants.RESULTS))) {
+              && Objects.nonNull(responseBody.get(JConstants.RESULTS))
+              && Objects.nonNull(responseBody.get(JConstants.TOTAL_COUNT))) {
         List<LinkedHashMap<String, Object>> results
                 = (List<LinkedHashMap<String, Object>>) responseBody.get(JConstants.RESULTS);
+        responseDto.getPagination().setCount((Integer) responseBody.get(JConstants.TOTAL_COUNT));
         for (LinkedHashMap<String, Object> result : results) {
           JobDetailsDto jobDetailsDto = new JobDetailsDto();
           mapToJobDetailsDto(result, jobDetailsDto);
