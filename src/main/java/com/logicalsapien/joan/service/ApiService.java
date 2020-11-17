@@ -80,7 +80,7 @@ public class ApiService {
    */
   public String getJobSearchApiUrl(final JobSearchRequestDto searchRequest) {
     String sanitizedCountry = getCountryShort(searchRequest.getCountry());
-    String what = searchRequest.getQuery().toLowerCase();
+    String what = searchRequest.getQuery().trim().toLowerCase();
     StringBuilder urlToCall = new StringBuilder(url + "/" + api + "/jobs/");
     urlToCall.append(sanitizedCountry.trim());
     urlToCall.append("/search/");
@@ -88,7 +88,7 @@ public class ApiService {
     urlToCall.append("?app_id=" + appId);
     urlToCall.append("&app_key=" + appKey);
     urlToCall.append("&results_per_page=" + searchRequest.getPagination().getSize());
-    // urlToCall.append("&title_only=" + jobNameToSearch.trim());
+     urlToCall.append("&what=" + what);
     return urlToCall.toString();
   }
 
