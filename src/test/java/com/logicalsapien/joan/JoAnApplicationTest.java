@@ -1,6 +1,5 @@
 package com.logicalsapien.joan;
 
-import com.logicalsapien.joan.utils.CommonUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +14,7 @@ class JoAnApplicationTest {
   @Test
   void mainTest() {
     JoAnApplication.main(new String[] {});
-    Assertions.assertNull(null);
+    Assertions.assertTrue(true);
   }
 
 }

@@ -59,11 +59,6 @@ jacocoTestReport {
 		html.enabled true
 		csv.enabled false
 	}
-	afterEvaluate {
-		classDirectories.setFrom(files(classDirectories.files.collect {
-			fileTree(dir: it, excludes: ['**/com/logicalsapien/joan/JoAnApplication**'])
-		}))
-	}
 }
 
 //For configuring checkstyle
@@ -78,7 +73,6 @@ sonarqube {
 		property "sonar.projectKey", "LogicalSapien_JoAn"
 		property "sonar.coverage.jacoco.xmlRe	portPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
 		property "sonar.coverage.exclusions", "src/main/java/com/logicalsapien/joan/config/JoAnConfig.java"
-		property "sonar.coverage.exclusions", "src/main/java/com/logicalsapien/joan/JoAnApplication.java"
 		property "sonar.exclusions", "src/java/test/**"
 	}
 }
