@@ -4,7 +4,7 @@ addons:
   sonarcloud:
     organization: logicalsapien
     token:
-      secure: $SONARCLOUD_TOKEN
+      secure: "Ren1WbL5ddI3X5ljHNdOmlvU5oZ2QOEsyPQvk5KW2wv5sZj9QEhzyzgGCkTGVQ83n7a+43wN0tGGMys6/G120cF5PBz7UCHL2JQBPLOSNd9MayL75qa0gd+nxwk9Oo88zSuQbKsgaGb1jdRnwWvB36JxevTlaemrvBbS4+95BeQWPGE5DAEg9Gm2UYFCfwETmGRquWeZRGjaQmTxanYVz0906De36iaY3HfzZNj/okSsEBBeNu9hJvvKFuS6ewR6w1meDjyzgP1p0t5ah5mRTmA5TThO/bzKAExbFBbmgQEgeyxyI+Yju4tupTggz97YU8ylVZDrgSB840IXfnn+cDJAFUe542U4/atWr5V6XDhO4Wwzza4Pr2GeAVBewC0fg+SyitEIKGH7eNOYAfVxxBD/odN5umtRyrFoarEqRGmQK9qJVa/aglceZcXrLJe/R/XO+I5SsvHtO8ehY77iIut2MNeBI/P7KK69gjiiunLW+Fi2gY4J4oefSKwpD10RUDGPyef5MBNwrbq1oqrLu30UHAeYV+Bk94/ZJkBxgTRgOqbz1QtrZ25fDkIW4Zzv0pYzxUErn3S3chKEPu6W7+INisZeor7YmY1x/o7Vx767AR7UJZEdSszWlunicZqbqeiVTxVYUPyBXJkOYy12IHipze8ZUh86vYlq1Raixt0="
 before_install:
 - chmod +x gradlew
 script:
