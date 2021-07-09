@@ -1,15 +1,14 @@
 package com.logicalsapien.joan.service;
 
-import com.logicalsapien.joan.model.CategoryDto;
-import com.logicalsapien.joan.model.CompanyDto;
-import com.logicalsapien.joan.model.JobDetailsDto;
-import com.logicalsapien.joan.model.JobSearchResponseDto;
-import com.logicalsapien.joan.model.LocationDto;
+import com.logicalsapien.joan.model.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.logicalsapien.joan.utils.JConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,6 +43,65 @@ class JobSearchServiceTest {
    */
   @MockBean
   private RestTemplate restTemplate;
+
+  /**
+   * Calculate average job salary test.
+   */
+  @Test
+  @DisplayName("Search Job test")
+  void searchJobTest() {
+
+    JobSearchRequestDto jobSearchRequest = new JobSearchRequestDto();
+    jobSearchRequest.setQuery("?query=query");
+    jobSearchRequest.setCountry("uk");
+
+    HttpHeaders header = new HttpHeaders();
+    header.setContentType(MediaType.APPLICATION_JSON);
+
+    Map<String, Object> bodyMap = new LinkedHashMap<>();
+    List<LinkedHashMap<String, Object>> results = new ArrayList<>();
+    LinkedHashMap<String, Object> jobMap = new LinkedHashMap<>();
+    jobMap.put("title", "title");
+    results.add(jobMap);
+    bodyMap.put(JConstants.RESULTS, results);
+    bodyMap.put(JConstants.TOTAL_COUNT, 1);
+    ResponseEntity apiResponse = new ResponseEntity<>(
+            bodyMap,
+            header,
+            HttpStatus.OK);
+
+    Mockito.when(restTemplate.exchange(
+            ArgumentMatchers.contains("/jobs/gb/search"),
+            ArgumentMatchers.eq(HttpMethod.GET),
+            ArgumentMatchers.isNull(),
+            ArgumentMatchers.<ParameterizedTypeReference<Object>>any())
+    ).thenReturn(apiResponse);
+
+    JobSearchResponseDto actualResponse = jobSearchService.searchJob(jobSearchRequest);
+
+    JobSearchResponseDto expectedResponse = new JobSearchResponseDto();
+    JobDetailsDto jobDetailsDto = new JobDetailsDto();
+    jobDetailsDto.setTitle("title");
+    expectedResponse.setJobDetails(new ArrayList<>());
+    expectedResponse.getJobDetails().add(jobDetailsDto);
+    PaginationDto paginationDto = new PaginationDto();
+    paginationDto.setPage(1);
+    paginationDto.setSize(10);
+    paginationDto.setCount(1);
+    expectedResponse.setPagination(paginationDto);
+
+    // Assert the response
+    Assertions.assertNotNull(actualResponse);
+    Assertions.assertEquals(expectedResponse, actualResponse);
+
+    // verify that the rest service is called once
+    Mockito.verify(restTemplate, Mockito.times(1))
+            .exchange(ArgumentMatchers.contains("/jobs/gb/search/1"),
+                    ArgumentMatchers.eq(HttpMethod.GET),
+                    ArgumentMatchers.isNull(),
+                    ArgumentMatchers.<ParameterizedTypeReference<Object>>any());
+
+  }
 
   /**
    * Calculate average job salary test.
