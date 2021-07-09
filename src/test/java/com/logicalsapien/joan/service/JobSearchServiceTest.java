@@ -1,14 +1,18 @@
 package com.logicalsapien.joan.service;
 
-import com.logicalsapien.joan.model.*;
-
+import com.logicalsapien.joan.model.CategoryDto;
+import com.logicalsapien.joan.model.CompanyDto;
+import com.logicalsapien.joan.model.JobDetailsDto;
+import com.logicalsapien.joan.model.JobSearchRequestDto;
+import com.logicalsapien.joan.model.JobSearchResponseDto;
+import com.logicalsapien.joan.model.LocationDto;
+import com.logicalsapien.joan.model.PaginationDto;
+import com.logicalsapien.joan.utils.JConstants;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.logicalsapien.joan.utils.JConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -77,8 +81,6 @@ class JobSearchServiceTest {
             ArgumentMatchers.<ParameterizedTypeReference<Object>>any())
     ).thenReturn(apiResponse);
 
-    JobSearchResponseDto actualResponse = jobSearchService.searchJob(jobSearchRequest);
-
     JobSearchResponseDto expectedResponse = new JobSearchResponseDto();
     JobDetailsDto jobDetailsDto = new JobDetailsDto();
     jobDetailsDto.setTitle("title");
@@ -89,6 +91,8 @@ class JobSearchServiceTest {
     paginationDto.setSize(10);
     paginationDto.setCount(1);
     expectedResponse.setPagination(paginationDto);
+
+    JobSearchResponseDto actualResponse = jobSearchService.searchJob(jobSearchRequest);
 
     // Assert the response
     Assertions.assertNotNull(actualResponse);

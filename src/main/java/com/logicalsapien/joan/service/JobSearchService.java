@@ -9,6 +9,7 @@ import com.logicalsapien.joan.model.JobSearchResponseDto;
 public interface JobSearchService {
 
   /**
+   * Search job.
    * @param jobSearchRequest Job Request
    * @return Search Response
    */

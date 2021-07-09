@@ -88,7 +88,7 @@ public class ApiService {
     urlToCall.append("?app_id=" + appId);
     urlToCall.append("&app_key=" + appKey);
     urlToCall.append("&results_per_page=" + searchRequest.getPagination().getSize());
-     urlToCall.append("&what=" + what);
+    urlToCall.append("&what=" + what);
     return urlToCall.toString();
   }
 
